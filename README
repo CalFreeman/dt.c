@@ -1,0 +1,67 @@
+Caleb Freeman
+CS4760 - Operating Systems
+Instructor: Dr. Hauschild
+Assignment #1 -  Linux System Calls and Library Functions
+
+1-CONTENTS
+----------
+dt.c            - source code
+.git/           - git Repository***(I am unsure on how i should handle this? should it be submitted?)
+Makefile        - makefile
+README          - this file
+
+2-WORKS CITED
+----------
+https://stackoverflow.com/questions/10323060/printing-file-permissions-like-ls-l-using-stat2-in-c
+
+https://codereview.stackexchange.com/questions/114479/implementation-of-the-ls-command-with-several-options
+
+https://stackoverflow.com/questions/8436841/how-to-recursively-list-directories-in-c-on-linux
+
+3-COMMAND LINE ARGUMENTS
+----------
+Example:        ./dt [-h] [-I n] [-L -d -g -i -p -s -t -i | -l] [dirname]
+-h      Print a help message and exit.
+-I n    Change indentation to n spaces for each level.
+-L      Follow symbolic links, if any. Default will be to not follow symbolic links.
+-t      Print information on file type
+-p      Print permission bits as rwxrwxrwx.
+-i      Print the number of links to file in inode table.
+-u      Print the UID associated with the file.
+-g      Print the GID associated with the file.
+-s      Print the silze of the file in bytes. If size is larger than 1K, incide the size in KB with suffix K,
+        if the size is larger than 1M, indicate the size in MB with suffix M; if the size is larger than 1G,
+        indcate the size in GB with suffix G.
+-d      show the time of last modification.
+-l      This option will be used to print the information on the flags if if -tpiugs are all specified.
+If the user does not specify dirname, run the command using the current directory and print the tree with accordingly.
+
+4-CODE COMPILATION:
+---------
+In my computer I am able to run the make file an execute with dt command
+example:
+>make
+>./dt -tpig [dirname]
+
+5-DESIGN DECISIONS & ISSUES
+---------
+When I originally started the project a quick google search of "recursivly listing directories" I decided on using file tree walk
+https://linux.die.net/man/3/nftw
+It seems to offer alot of desired functionality, throughout the course of the project, I noticed it was desirable to set flags
+to determine which getopt commands would be executed. I discovered as a result of the nature of nftw() cannot accept additional
+parameters. To resolve this issue I had to set a global of some sorts. I original wrote the code for a struct of bools, but was
+unable to get it to function properly, more specifically getting access to the struct from inside the
+printing functions (default_info_...). So this was rewritten using a global variable.
+
+Outstanding issue:
+The padding between the printf statement of display_info_default and displaying_info_one
+inside both functions a printf statement is commented that start with "this is kind of a trick"
+Currently the padding is set "statically", with a fixed value. I was unable to achieve a
+dynamically set the padding between the directory listings and the type/permissions lines.
+This seems to appear only wheen calling "./dt -I n -l" with either a larger n value,
+or if the nested directory listing is greater than the (base level) * (default indention == 4)
+with the current value being set to 25, any indentions around 5 directories deep seems to present this error.
+or a combination of the two.
+
+Minor issues:
+I list this one as minor, because i'm unsafly assuming(bad!) that this can simply be resolved if I figured out the logic on determining if it is the directory and skipping. i.e if the base and level of struct == 0. then skip.
